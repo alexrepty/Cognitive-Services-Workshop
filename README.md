@@ -2,7 +2,7 @@
 
 ## Overview
 
-These Xcode projects server as an introduction to [Microsoft's Cognitive Services](https://www.microsoft.com/cognitive-services/) and were created by [Alex Repty](https://twitter.com/arepty) as part of a [workshop for UIKonf 2016 in Berlin](http://www.uikonf.com/workshops/).
+These Xcode projects serve as an introduction to [Microsoft's Cognitive Services](https://www.microsoft.com/cognitive-services/) and were created by [Alex Repty](https://twitter.com/arepty) as part of a [workshop for UIKonf 2016 in Berlin](http://www.uikonf.com/workshops/).
 
 ## Prerequisites
 
