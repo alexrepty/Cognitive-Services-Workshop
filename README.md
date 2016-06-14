@@ -6,7 +6,7 @@ These Xcode projects serve as an introduction to [Microsoft's Cognitive Services
 
 ## Prerequisites
 
-You will need a Mac with a recent version of Xcode (7.3 as of this writing) to run these examples, plus a [Microsoft account](https://signup.live.com/) which you'll use to [sign up for Cognitive Services](https://www.microsoft.com/cognitive-services/en-us/sign-up). From there, you will be able to retrieve the necessary API keys to use in the Xcode projects.
+You will need a Mac with Xcode 8.0 and Swift 3 to run these examples ([a Swift 2 version for Xcode 7.x is still available](https://github.com/alexrepty/Cognitive-Services-Workshop/releases/tag/swift2)), plus a [Microsoft account](https://signup.live.com/) which you'll use to [sign up for Cognitive Services](https://www.microsoft.com/cognitive-services/en-us/sign-up). From there, you will be able to retrieve the necessary API keys to use in the Xcode projects.
 
 ## Tag & Tweet
 
