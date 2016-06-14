@@ -79,15 +79,15 @@ class CognitiveServicesManager: NSObject {
      - parameter image:      The image to analyse.
      - parameter completion: Callback closure.
      */
-    func retrievePlausibleTagsForImage(image: UIImage, completion: CognitiveServicesTagsResult) {
+    func retrievePlausibleTagsForImage(_ image: UIImage, completion: CognitiveServicesTagsResult) {
         assert(CognitiveServicesComputerVisionAPIKey.characters.count > 0, "Please set the value of the API key variable (CognitiveServicesVisualFeaturesAPIKey) before attempting to use the application.")
         
         // We need to specify that we want to retrieve tags for our image as a parameter to the URL.
         var urlString = CognitiveServicesConfiguration.AnalyzeURL
         urlString += "?\(CognitiveServicesHTTPParameters.VisualFeatures)=\("\(CognitiveServicesVisualFeatures.Tags)")"
         
-        let url = NSURL(string: urlString)
-        let request = NSMutableURLRequest(URL: url!)
+        let url = URL(string: urlString)
+        let request = NSMutableURLRequest(url: url!)
         
         // The subscription key is always added as an HTTP header field.
         request.addValue(CognitiveServicesComputerVisionAPIKey, forHTTPHeaderField: CognitiveServicesHTTPHeader.SubscriptionKey)
@@ -98,11 +98,11 @@ class CognitiveServicesManager: NSObject {
         // on the server side. In a production environment, you would check for this condition and handle it gracefully (either reduce
         // the quality, resize the image or prompt the user to take an action).
         let requestData = UIImageJPEGRepresentation(image, CognitiveServicesConfiguration.JPEGCompressionQuality)
-        request.HTTPBody = requestData
-        request.HTTPMethod = CognitiveServicesHTTPMethod.POST
+        request.httpBody = requestData
+        request.httpMethod = CognitiveServicesHTTPMethod.POST
         
-        let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+        let session = URLSession.shared()
+        let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
             if let error = error {
                 // In case of an error, handle it immediately and exit without doing anything else.
                 completion(nil, error)
@@ -111,7 +111,7 @@ class CognitiveServicesManager: NSObject {
             
             if let data = data {
                 do {
-                    let collectionObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
+                    let collectionObject = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
                     var result = [String]()
                     
                     if let dictionary = collectionObject as? Dictionary<String, AnyObject> {
