@@ -34,7 +34,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     // MARK: IBActions
     
-    @IBAction func chooseImage(sender: AnyObject) {
+    @IBAction func chooseImage(_ sender: AnyObject) {
         self.image = nil
         self.categories = nil
         
@@ -48,16 +48,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let imagePickerController = UIImagePickerController()
         imagePickerController.allowsEditing = false
         imagePickerController.delegate = self
-        imagePickerController.sourceType = .PhotoLibrary
+        imagePickerController.sourceType = .photoLibrary
         
-        self.presentViewController(
+        self.present(
             imagePickerController,
             animated: true,
             completion: nil
         )
     }
     
-    @IBAction func categoriseImage(sender: AnyObject) {
+    @IBAction func categoriseImage(_ sender: AnyObject) {
         self.categories = nil
         
         self.validateCurrentStep()
@@ -67,7 +67,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         let manager = CognitiveServicesManager()
         manager.retrievePlausibleTagsForImage(self.image!) { (result, error) -> (Void) in
-            dispatch_async(dispatch_get_main_queue(), { 
+            DispatchQueue.main.async(execute: { 
                 self.stepTwoSpinner.stopAnimating()
                 
                 if let _ = error {
@@ -81,13 +81,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     }
     
-    @IBAction func shareImage(sender: AnyObject) {
+    @IBAction func shareImage(_ sender: AnyObject) {
         self.stepThreeLabel.text = ""
         self.stepThreeSpinner.startAnimating()
         
         let serviceType = self.serviceSelectionControl.selectedSegmentIndex == 0 ? SLServiceTypeTwitter : SLServiceTypeFacebook
         let composeViewController = SLComposeViewController(forServiceType: serviceType)
-        composeViewController.addImage(self.image!)
+        composeViewController?.add(self.image!)
         
         var string = ""
         for category in self.categories! {
@@ -97,20 +97,20 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             string += "#\(category)"
         }
-        composeViewController.setInitialText(string)
-        composeViewController.completionHandler = { (result) in
+        composeViewController?.setInitialText(string)
+        composeViewController?.completionHandler = { (result) in
             self.stepThreeSpinner.stopAnimating()
             
             switch result {
-            case .Cancelled:
+            case .cancelled:
                 self.stepThreeLabel.text = "🙁"
-            case .Done:
+            case .done:
                 self.stepThreeLabel.text = "😃"
             }
         }
         
-        self.presentViewController(
-            composeViewController,
+        self.present(
+            composeViewController!,
             animated: true,
             completion: nil
         )
@@ -126,35 +126,35 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         if let _ = self.image {
             // We have selected an image, update our status accordingly and enable the next step's button.
             self.stepOneLabel.text = "😃"
-            self.stepTwoButton.enabled = true
+            self.stepTwoButton.isEnabled = true
         } else {
             self.stepTwoLabel.text = ""
             self.stepThreeLabel.text = ""
-            self.stepTwoButton.enabled = false
-            self.stepThreeButton.enabled = false
+            self.stepTwoButton.isEnabled = false
+            self.stepThreeButton.isEnabled = false
         }
         
         if let _ = self.categories {
             // We have received a list of categories, update our status accordingly and enable the next step's button.
             self.stepTwoLabel.text = "😃"
-            self.stepThreeButton.enabled = true
+            self.stepThreeButton.isEnabled = true
         } else {
             self.stepThreeLabel.text = ""
-            self.stepThreeButton.enabled = false
+            self.stepThreeButton.isEnabled = false
         }
     }
     
     // MARK: UIImagePickerControllerDelegate Methods
     
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
         
         self.stepOneLabel.text = "🙁"
         self.validateCurrentStep()
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        picker.dismiss(animated: true, completion: nil)
         
         if let image = info[UIImagePickerControllerOriginalImage] as! UIImage? {
             self.image = image

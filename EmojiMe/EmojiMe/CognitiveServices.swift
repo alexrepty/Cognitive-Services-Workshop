@@ -100,11 +100,11 @@ class CognitiveServicesManager: NSObject {
      - parameter image:      The image to analyse.
      - parameter completion: Callback closure.
      */
-    func retrievePlausibleEmotionsForImage(image: UIImage, completion: EmotionResult) {
+    func retrievePlausibleEmotionsForImage(_ image: UIImage, completion: EmotionResult) {
         assert(CognitiveServicesEmotionAPIKey.characters.count > 0, "Please set the value of the API key variable (CognitiveServicesEmotionAPIKey) before attempting to use the application.")
         
-        let url = NSURL(string: CognitiveServicesConfiguration.EmotionURL)
-        let request = NSMutableURLRequest(URL: url!)
+        let url = URL(string: CognitiveServicesConfiguration.EmotionURL)
+        let request = NSMutableURLRequest(url: url!)
 
         // The subscription key is always added as an HTTP header field.
         request.addValue(CognitiveServicesEmotionAPIKey, forHTTPHeaderField: CognitiveServicesHTTPHeader.SubscriptionKey)
@@ -115,11 +115,11 @@ class CognitiveServicesManager: NSObject {
         // on the server side. In a production environment, you would check for this condition and handle it gracefully (either reduce
         // the quality, resize the image or prompt the user to take an action).
         let requestData = UIImageJPEGRepresentation(image, 0.9)
-        request.HTTPBody = requestData
-        request.HTTPMethod = CognitiveServicesHTTPMethod.POST
+        request.httpBody = requestData
+        request.httpMethod = CognitiveServicesHTTPMethod.POST
         
-        let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+        let session = URLSession.shared()
+        let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
             if let error = error {
                 // In case of an error, handle it immediately and exit without doing anything else.
                 completion(nil, error)
@@ -128,7 +128,7 @@ class CognitiveServicesManager: NSObject {
             
             if let data = data {
                 do {
-                    let collectionObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
+                    let collectionObject = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
                     var result = [CognitiveServicesEmotionResult]()
                     
                     if let array = collectionObject as? EmotionReplyType {

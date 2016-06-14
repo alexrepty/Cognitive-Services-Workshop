@@ -34,7 +34,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             if let results = self.emojis {
                 UIGraphicsBeginImageContext(self.image!.size)
-                self.image?.drawInRect(CGRect(origin: CGPointZero, size: self.image!.size))
+                self.image?.draw(in: CGRect(origin: CGPoint.zero, size: self.image!.size))
                 
                 for result in results {
                     var availableEmojis = [String]()
@@ -89,8 +89,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                             break
                         }
                         
-                        let font = UIFont.systemFontOfSize(CGFloat(actualFontSize))
-                        let calculatedSize = string.sizeWithAttributes([NSFontAttributeName: font])
+                        let font = UIFont.systemFont(ofSize: CGFloat(actualFontSize))
+                        let calculatedSize = string.size(attributes: [NSFontAttributeName: font])
                         
                         if calculatedSize.width > maximumSize.width {
                             actualFontSize -= stepping
@@ -99,8 +99,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                         }
                     } while true
                     
-                    let font = UIFont.systemFontOfSize(CGFloat(actualFontSize))
-                    string.drawInRect(result.frame, withAttributes: [NSFontAttributeName: font])
+                    let font = UIFont.systemFont(ofSize: CGFloat(actualFontSize))
+                    string.draw(in: result.frame, withAttributes: [NSFontAttributeName: font])
                 }
                 
                 self.image = UIGraphicsGetImageFromCurrentImageContext()
@@ -128,7 +128,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     // MARK: IBActions
     
-    @IBAction func chooseImage(sender: AnyObject) {
+    @IBAction func chooseImage(_ sender: AnyObject) {
         self.image = nil
         self.emojis = nil
         
@@ -142,16 +142,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let imagePickerController = UIImagePickerController()
         imagePickerController.allowsEditing = false
         imagePickerController.delegate = self
-        imagePickerController.sourceType = .PhotoLibrary
+        imagePickerController.sourceType = .photoLibrary
         
-        self.presentViewController(
+        self.present(
             imagePickerController,
             animated: true,
             completion: nil
         )
     }
     
-    @IBAction func emojiMeImage(sender: AnyObject) {
+    @IBAction func emojiMeImage(_ sender: AnyObject) {
         self.emojis = nil
         
         self.validateCurrentStep()
@@ -161,7 +161,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         let manager = CognitiveServicesManager()
         manager.retrievePlausibleEmotionsForImage(self.image!) { (result, error) -> (Void) in
-            dispatch_async(dispatch_get_main_queue(), { 
+            DispatchQueue.main.async(execute: { 
                 self.stepTwoSpinner.stopAnimating()
                 
                 if let _ = error {
@@ -175,27 +175,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     }
     
-    @IBAction func shareImage(sender: AnyObject) {
+    @IBAction func shareImage(_ sender: AnyObject) {
         self.stepThreeLabel.text = ""
         self.stepThreeSpinner.startAnimating()
         
         let serviceType = self.serviceSelectionControl.selectedSegmentIndex == 0 ? SLServiceTypeTwitter : SLServiceTypeFacebook
         let composeViewController = SLComposeViewController(forServiceType: serviceType)
-        composeViewController.addImage(self.image!)
+        composeViewController?.add(self.image!)
         
-        composeViewController.completionHandler = { (result) in
+        composeViewController?.completionHandler = { (result) in
             self.stepThreeSpinner.stopAnimating()
             
             switch result {
-            case .Cancelled:
+            case .cancelled:
                 self.stepThreeLabel.text = "🙁"
-            case .Done:
+            case .done:
                 self.stepThreeLabel.text = "😃"
             }
         }
         
-        self.presentViewController(
-            composeViewController,
+        self.present(
+            composeViewController!,
             animated: true,
             completion: nil
         )
@@ -211,35 +211,35 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         if let _ = self.image {
             // We have selected an image, update our status accordingly and enable the next step's button.
             self.stepOneLabel.text = "😃"
-            self.stepTwoButton.enabled = true
+            self.stepTwoButton.isEnabled = true
         } else {
             self.stepTwoLabel.text = ""
             self.stepThreeLabel.text = ""
-            self.stepTwoButton.enabled = false
-            self.stepThreeButton.enabled = false
+            self.stepTwoButton.isEnabled = false
+            self.stepThreeButton.isEnabled = false
         }
         
         if let _ = self.emojis {
             // We have received a list of categories, update our status accordingly and enable the next step's button.
             self.stepTwoLabel.text = "😃"
-            self.stepThreeButton.enabled = true
+            self.stepThreeButton.isEnabled = true
         } else {
             self.stepThreeLabel.text = ""
-            self.stepThreeButton.enabled = false
+            self.stepThreeButton.isEnabled = false
         }
     }
     
     // MARK: UIImagePickerControllerDelegate Methods
     
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
         
         self.stepOneLabel.text = "🙁"
         self.validateCurrentStep()
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
-        picker.dismissViewControllerAnimated(true, completion: nil)
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        picker.dismiss(animated: true, completion: nil)
         
         if let image = info[UIImagePickerControllerOriginalImage] as! UIImage? {
             self.image = image
